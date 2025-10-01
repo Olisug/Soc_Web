@@ -1,0 +1,302 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Мои диалоги - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <!-- Заголовок -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="friends-title">💬 Мои диалоги</h1>
+                <a href="{% url 'Users:search' %}" class="btn btn-primary btn-sm">
+                    🔍 Найти пользователей
+                </a>
+            </div>
+            <!-- Список диалогов -->
+            <div class="card">
+                <div class="card-body p-0">
+                    {% if messages %}
+                        <div class="list-group list-group-flush">
+                            {% for message in messages %}
+                                {% if message.sender != request.user %}
+                                    {% with companion=message.sender %}
+                                    <a href="{% url 'Dialogs:dialog' companion.id %}" 
+                                       class="list-group-item list-group-item-action dialog-item">
+                                        <div class="d-flex align-items-center">
+                                            <!-- Аватар собеседника (маленький) -->
+                                            <div class="dialog-avatar me-2">
+                                                {% if companion.avatar %}
+                                                    <img src="{{ companion.avatar.url }}" 
+                                                         alt="{{ companion.username }}"
+                                                         class="rounded-circle" width="36" height="36">
+                                                {% else %}
+                                                    <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center"
+                                                         style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--main-color), var(--secondary-color)); color: white; font-size: 0.9rem; font-weight: bold;">
+                                                        {{ companion.username|first }}
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                {% if not message.is_readed and message.reciever == request.user %}
+                                                <span class="unread-badge">1</span>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Информация о диалоге -->
+                                            <div class="flex-grow-1 me-2">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <h6 class="mb-0 dialog-name" style="font-size: 0.95rem;">{{ companion.username }}</h6>
+                                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                                        {{ message.message_time|date:"d.m.Y H:i" }}
+                                                    </small>
+                                                </div>
+                                                
+                                                <p class="mb-0 text-muted dialog-preview" style="font-size: 0.85rem; line-height: 1.2;">
+                                                    {% if message.sender == request.user %}
+                                                        <span class="me-1">Вы:</span>
+                                                    {% endif %}
+                                                    {{ message.message_text|truncatewords:8 }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Действия -->
+                                            <div class="dialog-actions">
+                                                <form method="post" 
+                                                      action="{% url 'Dialogs:delete_dialog' companion.id %}" 
+                                                      class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" 
+                                                            class="btn btn-sm btn-outline-danger p-1"
+                                                            style="font-size: 0.8rem; min-width: 30px;"
+                                                            onclick="return confirm('Удалить диалог с {{ companion.username }}?')">
+                                                        🗑️
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    {% endwith %}
+                                {% else %}
+                                    {% with companion=message.reciever %}
+                                    <a href="{% url 'Dialogs:dialog' companion.id %}" 
+                                       class="list-group-item list-group-item-action dialog-item">
+                                        <div class="d-flex align-items-center">
+                                            <!-- Аватар собеседника (маленький) -->
+                                            <div class="dialog-avatar me-2">
+                                                {% if companion.avatar %}
+                                                    <img src="{{ companion.avatar.url }}" 
+                                                         alt="{{ companion.username }}"
+                                                         class="rounded-circle" width="36" height="36">
+                                                {% else %}
+                                                    <div class="avatar-placeholder rounded-circle d-flex align-items-center justify-content-center"
+                                                         style="width: 36px; height: 36px; background: linear-gradient(135deg, var(--main-color), var(--secondary-color)); color: white; font-size: 0.9rem; font-weight: bold;">
+                                                        {{ companion.username|first }}
+                                                    </div>
+                                                {% endif %}
+                                                
+                                                {% if not message.is_readed and message.reciever == request.user %}
+                                                <span class="unread-badge">1</span>
+                                                {% endif %}
+                                            </div>
+
+                                            <!-- Информация о диалоге -->
+                                            <div class="flex-grow-1 me-2">
+                                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                                    <h6 class="mb-0 dialog-name" style="font-size: 0.95rem;">{{ companion.username }}</h6>
+                                                    <small class="text-muted" style="font-size: 0.75rem;">
+                                                        {{ message.message_time|date:"d.m.Y H:i" }}
+                                                    </small>
+                                                </div>
+                                                
+                                                <p class="mb-0 text-muted dialog-preview" style="font-size: 0.85rem; line-height: 1.2;">
+                                                    {% if message.sender == request.user %}
+                                                        <span class="me-1">Вы:</span>
+                                                    {% endif %}
+                                                    {{ message.message_text|truncatewords:8 }}
+                                                </p>
+                                            </div>
+
+                                            <!-- Действия -->
+                                            <div class="dialog-actions">
+                                                <form method="post" 
+                                                      action="{% url 'Dialogs:delete_dialog' companion.id %}" 
+                                                      class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" 
+                                                            class="btn btn-sm btn-outline-danger p-1"
+                                                            style="font-size: 0.8rem; min-width: 30px;"
+                                                            onclick="return confirm('Удалить диалог с {{ companion.username }}?')">
+                                                        🗑️
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </a>
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <!-- Пустой список -->
+                        <div class="text-center py-4">
+                            <div class="empty-icon mb-2" style="font-size: 2rem;">💬</div>
+                            <h5 style="font-size: 1.1rem;">Диалогов пока нет</h5>
+                            <p class="text-muted" style="font-size: 0.9rem;">Начните общение с другими пользователями</p>
+                            <a href="{% url 'Users:search' %}" class="btn btn-primary btn-sm mt-1">
+                                Найти пользователей
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Список друзей для новых диалогов -->
+            {% comment %} {% if friends1 or friends2 %}
+            <div class="card mt-3">
+                <div class="card-header py-2">
+                    <h6 class="mb-0">👥 Ваши друзья</h6>
+                </div>
+                <div class="card-body py-2">
+                    <div class="row">
+                        {% for friend in friends1 %}
+                        <div class="col-md-6 mb-1">
+                            <a href="{% url 'Dialogs:dialog' friend.users_friend.id %}" class="text-decoration-none">
+                                <div class="d-flex align-items-center p-1 bg-light rounded">
+                                    {% if friend.users_friend.avatar %}
+                                    <img src="{{ friend.users_friend.avatar.url }}" 
+                                         alt="{{ friend.users_friend.username }}"
+                                         class="rounded-circle me-2" width="24" height="24">
+                                    {% else %}
+                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                         style="width: 24px; height: 24px; background: #5181b8; color: white; font-size: 0.7rem; font-weight: bold;">
+                                        {{ friend.users_friend.username|first }}
+                                    </div>
+                                    {% endif %}
+                                    <span style="font-size: 0.85rem;">{{ friend.users_friend.username }}</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                        
+                        {% for friend in friends2 %}
+                        <div class="col-md-6 mb-1">
+                            <a href="{% url 'Dialogs:dialog' friend.user.id %}" class="text-decoration-none">
+                                <div class="d-flex align-items-center p-1 bg-light rounded">
+                                    {% if friend.user.avatar %}
+                                    <img src="{{ friend.user.avatar.url }}" 
+                                         alt="{{ friend.user.username }}"
+                                         class="rounded-circle me-2" width="24" height="24">
+                                    {% else %}
+                                    <div class="rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                         style="width: 24px; height: 24px; background: #5181b8; color: white; font-size: 0.7rem; font-weight: bold;">
+                                        {{ friend.user.username|first }}
+                                    </div>
+                                    {% endif %}
+                                    <span style="font-size: 0.85rem;">{{ friend.user.username }}</span>
+                                </div>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div> {% endcomment %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.dialog-item {
+    padding: 12px 15px !important;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.dialog-item:hover {
+    background-color: #f8f9fa !important;
+    text-decoration: none;
+}
+
+.dialog-avatar {
+    position: relative;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+}
+
+.dialog-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.unread-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background: #dc3545;
+    color: white;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.6rem;
+    font-weight: bold;
+}
+
+.dialog-name {
+    color: #333;
+    font-weight: 600;
+}
+
+.dialog-preview {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.dialog-actions {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.dialog-item:hover .dialog-actions {
+    opacity: 1;
+}
+
+.empty-icon {
+    opacity: 0.5;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .dialog-avatar {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .dialog-item {
+        padding: 10px 12px !important;
+    }
+    
+    .dialog-actions {
+        opacity: 1;
+    }
+    
+    .dialog-name {
+        font-size: 0.9rem !important;
+    }
+    
+    .dialog-preview {
+        font-size: 0.8rem !important;
+    }
+}
+</style>
+{% endblock %}

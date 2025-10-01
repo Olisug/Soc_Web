@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{%load static%}
+{%block title%}<title>Моя страница</title>{%endblock%}
+
+{%block content%}
+    <div class='profile'>
+        <div class='avatar'>
+            {% if user.avatar %}
+                <img src="{{user.avatar.url}}" height=200px >
+            {%endif%}
+        </div>
+        <div class='info'>
+            <h5>Имя: {{user.username}}</h5>
+            <h5>День рождения: {{user.birth_date|date:"d.m.Y"}}</h5>
+            <h5>Город: {{user.city}}</h5>
+        </div>
+    </div>
+{%endblock%}

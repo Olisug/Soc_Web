@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Мои подписки - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="friends-container">
+    <h1 class="friends-title">Мои подписки</h1>
+    <div class="friends-list">
+        {% for sub in subscribes %}
+        <div class="friend-card">
+            <div class="friend-avatar">
+                {% if sub.follower_for.avatar %}
+                    <img src="{{ sub.follower_for.avatar.url }}" alt="{{ sub.follower_for.username }}">
+                {% else %}
+                    <img src="{% static 'img/default_avatar.jpg' %}" alt="Аватар">
+                {% endif %}
+            </div>
+            
+            <div class="friend-info">
+                <h3 class="friend-name">
+                    {{ sub.follower_for.username }}
+                </h3>
+                <p class="friend-username">@{{ sub.follower_for.username }}</p>
+            </div>
+            <div class="friend-actions">
+                <a href="{% url 'Users:another_profile' sub.follower_for.id %}" class="profile-link">Профиль</a>
+                <form method="post" action="{% url 'Users:cancel_subscribe' sub.follower_for.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="remove-btn">Отписаться</button>
+                </form>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-friends">
+            <div class="no-friends-icon">👥</div>
+            <h2>У вас пока нет подписок</h2>
+            <p>Найдите интересных людей и подпишитесь на них</p>
+            <a href="{% url 'Users:search' %}" class="find-friends-btn">Найти пользователей</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

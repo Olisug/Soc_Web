@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}<title>Редактировать пост - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="create-post-container">
+    <div class="create-post-card">
+        <div class="post-header">
+            <h2>Редактировать запись</h2>
+        </div>
+
+        <!-- Отображение общих ошибок формы -->
+        {% if form.non_field_errors %}
+        <div class="form-errors">
+            {% for error in form.non_field_errors %}
+            <div class="error-message">⚠️ {{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form action="" method="post" enctype="multipart/form-data" class="post-form">
+            {% csrf_token %}
+            
+            <div class="form-fields">
+                <!-- Поле контента -->
+                <div class="form-group">
+                    <label for="id_text" class="form-label">Текст записи *</label>
+                    <textarea name="text" id="id_text" class="post-textarea" 
+                              placeholder="Что у вас нового?" rows="5" required>{{ form.text.value|default:'' }}</textarea>
+                    {% if form.text.errors %}
+                    <div class="error-list">
+                        {% for error in form.text.errors %}
+                        <span class="error-text">⚠️ {{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Поле изображения -->
+                <div class="form-group">
+                    <label for="id_photo" class="form-label">Изображение (необязательно)</label>
+                    
+                    <!-- Текущее изображение -->
+                    {% if post.photo %}
+                    <div class="current-image">
+                        <p>Текущее изображение:</p>
+                        <img src="{{ post.photo.url }}" alt="Текущее изображение" class="current-image-preview">
+                        <label class="remove-image-checkbox">
+                            <input type="checkbox" name="remove_photo" id="remove_photo">
+                            Удалить изображение
+                        </label>
+                    </div>
+                    {% endif %}
+
+                    <div class="file-input-container">
+                        <input type="file" name="photo" id="id_photo" class="file-input" 
+                               accept="image/*">
+                        <label for="id_photo" class="file-input-label">
+                            <span class="file-icon">📷</span>
+                            <span class="file-text">
+                                {% if post.photo %}Заменить изображение{% else %}Выберите изображение{% endif %}
+                            </span>
+                        </label>
+                    </div>
+                    {% if form.photo.errors %}
+                    <div class="error-list">
+                        {% for error in form.photo.errors %}
+                        <span class="error-text">⚠️ {{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="submit-post-btn">
+                    💾 Сохранить изменения
+                </button>
+                <a href="{% url 'Posts:my_posts' %}" class="cancel-btn">
+                    ← Назад к моим записям
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

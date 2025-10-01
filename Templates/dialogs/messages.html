@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Сообщения - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="messages-container">
+    <div class="messages-header">
+        <h1>💬 Мои сообщения</h1>
+        <a href="{% url 'Dialogs:write' %}" class="btn btn-primary">
+            ✏️ Написать сообщение
+        </a>
+    </div>
+
+    <div class="messages-content">
+        <!-- Список диалогов -->
+        <div class="dialogs-list">
+            <h3>Диалоги</h3>
+            {% if messages %}
+                {% for message in messages %}
+                <div class="dialog-item" data-user-id="{{ message.sender.id }}">
+                    <a href="{% url 'Dialogs:dialog' message.sender.username %}" class="dialog-link">
+                        <div class="dialog-avatar">
+                            {% if message.sender.avatar %}
+                                <img src="{{ message.sender.avatar.url }}" alt="{{ message.sender.username }}">
+                            {% else %}
+                                <div class="avatar-placeholder">{{ message.sender.username|first }}</div>
+                            {% endif %}
+                        </div>
+                        <div class="dialog-info">
+                            <div class="dialog-name">{{ message.sender.username }}</div>
+                            <div class="dialog-preview">{{ message.message_text|truncatewords:10 }}</div>
+                            <div class="dialog-time">{{ message.message_time|date:"d.m.Y H:i" }}</div>
+                        </div>
+                        {% if not message.is_readed and message.reciever == request.user %}
+                        <span class="unread-badge">●</span>
+                        {% endif %}
+                    </a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-dialogs">
+                    <p>У вас пока нет сообщений</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Список друзей для нового сообщения -->
+        <div class="friends-list">
+            <h3>Друзья</h3>
+            {% for friend in friends1 %}
+                <div class="friend-item">
+                    <a href="{% url 'Dialogs:dialog' friend.users_friend.username %}" class="friend-link">
+                        {{ friend.users_friend.username }}
+                    </a>
+                </div>
+            {% endfor %}
+            {% for friend in friends2 %}
+                <div class="friend-item">
+                    <a href="{% url 'Dialogs:dialog' friend.user.username %}" class="friend-link">
+                        {{ friend.user.username }}
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.messages-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.messages-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.messages-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+.dialogs-list, .friends-list {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.dialog-item {
+    border-bottom: 1px solid #eee;
+    padding: 15px 0;
+}
+
+.dialog-item:last-child {
+    border-bottom: none;
+}
+
+.dialog-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    position: relative;
+}
+
+.dialog-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-right: 15px;
+}
+
+.dialog-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.dialog-info {
+    flex: 1;
+}
+
+.dialog-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.dialog-preview {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.dialog-time {
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.unread-badge {
+    color: #dc3545;
+    font-size: 1.5rem;
+    margin-left: 10px;
+}
+
+.friend-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.friend-link {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.friend-link:hover {
+    text-decoration: underline;
+}
+
+.empty-dialogs {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+}
+</style>
+{% endblock %}

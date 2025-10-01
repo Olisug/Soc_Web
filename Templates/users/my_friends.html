@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Мои друзья</title>{% endblock %}
+
+{% block content %}
+<div class="friends-container">
+    <h1 class="friends-title">Мои друзья ({{ total_number }})</h1>
+    <div class="friends-list">
+        {% for friend in friends1 %}
+        <div class="friend-card">
+            <div class="friend-avatar">
+                {% if friend.users_friend.avatar %}
+                     <img src="{{ friend.users_friend.avatar.url }}">
+                {% else %}
+                    <img src="{% static 'img/default_avatar.jpg' %}" alt="Аватар">
+                {% endif %}
+            </div>
+            
+            <div class="friend-info">
+                <h3 class="friend-name">
+                    {{ friend.users_friend.username }}
+                </h3>
+                <p class="friend-username">@{{ friend.users_friend.username }}</p>
+            </div>
+    
+            <div class="friend-actions">
+                <a href="{% url 'Users:another_profile' friend.users_friend.id %}" class="profile-link">Профиль</a>
+                <form method="post" action="{% url 'Users:delete_friend' friend.users_friend.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="remove-btn">✕</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+        
+        {% for friend in friends2 %}
+        <div class="friend-card">
+            <div class="friend-avatar">
+                {% if friend.user.profile.avatar %}
+                     <img src="{{ friend.users_friend.profile.avatar.url }}" alt="{{ friend.users_friend.username }}">
+                {% else %}
+                    <img src="{% static 'images/default_avatar.jpg' %}" alt="Аватар">
+                {% endif %}
+            </div>
+            
+            <div class="friend-info">
+                <h3 class="friend-name">
+                    {{ friend.user.username }}
+                </h3>
+                <p class="friend-username">@{{ friend.user.username }}</p>
+            </div>
+            
+            <div class="friend-actions">
+                <a href="{% url 'Users:another_profile' friend.user.id %}" class="profile-link">Профиль</a>
+                <form method="post" action="{% url 'Users:delete_friend' friend.user.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="remove-btn">✕</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    {% comment %} {% if not friends1 and not friends2 %}
+    <div class="no-friends">
+        <div class="no-friends-icon">👥</div>
+        <h2>У вас пока нет друзей</h2>
+        <p>Найдите друзей и отправьте им запросы</p>
+        <a href="{% url 'Users:find_users' %}" class="find-friends-btn">Найти друзей</a>
+    </div> {% endcomment %}
+    {% comment %} {% endif %} {% endcomment %}
+</div>
+{% endblock %}

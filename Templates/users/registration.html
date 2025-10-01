@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Регистрация - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h2>Регистрация</h2>
+            <p>Присоединяйтесь к нашему сообществу</p>
+        </div>
+        
+        <form method="post" class="auth-form">
+            {% csrf_token %}
+            
+            <div class="form-fields">
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}" class="form-label">
+                        {{ field.label }}
+                    </label>
+                    
+                    {% if field.name == 'city' %}
+                    <!-- Специальное поле для города с автокомплитом -->
+                    <input type="text" 
+                           name="{{ field.name }}" 
+                           id="id_city"
+                           class="form-control city-autocomplete"
+                           list="cities-list"
+                           placeholder="Начните вводить название города..."
+                           value="{{ field.value|default:'' }}"
+                           autocomplete="off">
+                    <datalist id="cities-list"></datalist>
+                    {% else %}
+                    <!-- Остальные поля как есть -->
+                    {{ field }}
+                    {% endif %}
+                    
+                    {% if field.help_text %}
+                    <div class="help-text">{{ field.help_text }}</div>
+                    {% endif %}
+                    {% if field.errors %}
+                    <div class="error-list">
+                        {% for error in field.errors %}
+                        <span class="error-text">{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button type="submit" class="auth-submit-btn">
+                Создать аккаунт
+            </button>
+        </form>
+        
+        <div class="auth-footer">
+            <p>Уже есть аккаунт? <a href="{% url 'Users:login' %}" class="auth-link">Войти</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cityInput = document.getElementById('id_city');
+    const datalist = document.getElementById('cities-list');
+    
+    if (!cityInput) return;
+    
+    let debounceTimer;
+    
+    cityInput.addEventListener('input', function(e) {
+        clearTimeout(debounceTimer);
+        const query = e.target.value.trim();
+        
+        if (query.length < 2) {
+            datalist.innerHTML = '';
+            return;
+        }
+        
+        debounceTimer = setTimeout(() => {
+            fetch(`/api/cities/?q=${encodeURIComponent(query)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(cities => {
+                    datalist.innerHTML = '';
+                    cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        datalist.appendChild(option);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching cities:', error);
+                    datalist.innerHTML = '';
+                });
+        }, 300);
+    });
+    
+    // Очищаем список при потере фокуса
+    cityInput.addEventListener('blur', function() {
+        setTimeout(() => {
+            datalist.innerHTML = '';
+        }, 200);
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.city-autocomplete {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.city-autocomplete:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.city-autocomplete::placeholder {
+    color: #6c757d;
+    opacity: 0.7;
+}
+
+/* Стили для остальных полей формы */
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .city-autocomplete,
+    .form-control {
+        font-size: 16px; /* Убираем zoom на iOS */
+    }
+}
+</style>
+{% endblock %}

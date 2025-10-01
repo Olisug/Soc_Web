@@ -1,0 +1,43 @@
+{% load static %}
+<header class='header'>
+    <div class='container-emblem'>
+        <a href="/"><img class='emblem' src="{% static 'img/emblem.png' %}"></a>
+    </div>
+    {%if request.user.is_authenticated%}
+    <div class="container-navigation">
+        <a href="{% url 'Users:my_friends' %}" class="nav-btn">Друзья</a>
+        <a href="{% url 'Users:my_subscribers' %}" class="nav-btn">Подписчики</a>
+        <a href="{% url 'Users:my_subscribes' %}" class="nav-btn">Подписки</a>
+        <a href="{% url 'Dialogs:my_dialogs' %}" class="nav-btn">Диалоги</a>
+        <a href="{% url 'Users:my_apps' %}" class="nav-btn">Приложения</a>
+    </div>
+    {%endif%}
+    <div class='container_search'>
+        <form action="{% url 'Users:search' %}" method="get">
+          <input name="q" type="text" placeholder="Поиск пользователей">
+          <input type="submit" value="🔍" />
+        </form>
+    </div>
+    <div class='container-buttons'>
+        {%if request.user.is_authenticated%}
+            <div class="dropdown">
+              <button class="dropbtn">Настройки ⏷</button>
+              <div class="dropdown-menu">
+                  <a href="{% url 'Users:my_profile'%}">Мой профиль</a>
+                  <a href="{% url 'Users:logout'%}">Выход</a>
+              </div>
+            </div>
+        {%else%}
+        <a href="{% url 'Users:login'%}">
+          <button type='button' class='button_enter'>
+          Войти
+          </button>
+        </a>
+        <a href="{% url 'Users:registration'%}">
+          <button type='button' class='button_register'>
+            Регистрация
+          </button>
+        </a>
+          {%endif%}
+    </div>
+</header>

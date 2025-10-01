@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{%load static%}
+{%block title%}<title>Страница пользователя {{another_user.username}}</title>{%endblock%}
+
+{%block content%}
+    <div class='another_profile'>
+        <div class='another_avatar'>
+            {% if another_user.avatar %}
+                <img src="{{another_user.avatar.url}}" height=200px >
+            {%endif%}
+        </div>
+        
+        <div class='another_info'>
+            <h5>Имя: {{another_user.username}}</h5>
+            <h5>День рождения: {{another_user.birth_date|date:"d.m.Y"}}</h5>
+            <h5>Город: {{another_user.city}}</h5>
+            
+            <!-- Кнопки дружбы -->
+            {% if request.user.is_authenticated %}
+            <div class="profile-actions">
+                <a href="{% url 'Dialogs:dialog' another_user.id %}" class="message-btn">
+                    ✉️ Написать
+                </a>
+                
+                {% if is_friend %}
+                    <form method="post" action="{% url 'Users:delete_friend' another_user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="remove-friend-btn">
+                            ❌ Удалить из друзей
+                        </button>
+                    </form>
+                {% elif friend_request_sent %}
+                    <button class="request-pending-btn" disabled>
+                        ⏳ Заявка отправлена
+                    </button>
+                {% elif friend_request_received %}
+                    <form method="post" action="{% url 'Users:confirm_friend' another_user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="accept-request-btn">
+                            ✅ Принять заявку
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'Users:send_request' another_user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="add-friend-btn">
+                            👥 Добавить в друзья
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            <!-- Статус дружбы -->
+            <div class="friendship-status">
+                {% if is_friend %}
+                    <p class="status-friend">✅ Пользователь является Вашим другом</p>
+                {% elif friend_request_sent %}
+                    <p class="status-pending">⏳ Вы отправили заявку в друзья</p>
+                {% elif friend_request_received %}
+                    <p class="status-received">📩 Пользователь отправил вам заявку в друзья</p>
+                {% else %}
+                    <p class="status-neutral">Пользователь не является Вашим другом</p>
+                {% endif %}
+            </div>
+            <!-- Кнопки подписки -->
+            <div class="subscribe-actions">
+                <h6>Подписка:</h6>
+                {% if is_subscribed %}
+                    <form method="post" action="{% url 'Users:cancel_subscribe' another_user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="remove-friend-btn">
+                            ❌ Отменить подписку
+                        </button>
+                    </form>
+                {% else %}
+                    <form method="post" action="{% url 'Users:subscribe' another_user.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="add-friend-btn">
+                            ✅ Подписаться
+                        </button>
+                    </form>
+                {% endif %}
+            </div>
+            {%endif%}
+        </div>
+    </div>
+{%endblock%}

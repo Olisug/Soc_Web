@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Главная - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="index-container">
+    <!-- Шапка ленты -->
+    <div class="feed-header">
+        <h1>Лента новостей</h1>
+        {% if request.user.is_authenticated %}
+        <div class="feed-actions">
+            <a href="{% url 'Posts:create_post' %}" class="btn btn-primary">
+                📝 Добавить запись
+            </a>
+            <a href="{% url 'Posts:my_posts' %}" class="btn btn-secondary">
+                📋 Мои записи
+            </a>
+            <a href="{% url 'Posts:liked_posts' %}" class="btn btn-secondary">
+                ❤️ Мои понравившиеся
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Для неавторизованных пользователей -->
+    {% if not request.user.is_authenticated %}
+    <div class="auth-required">
+        <div class="auth-message">
+            <div class="auth-icon">🔐</div>
+            <h3>Присоединяйтесь к нашему сообществу!</h3>
+            <p>Чтобы увидеть ленту новостей и общаться с друзьями, войдите в свой аккаунт или создайте новый</p>
+            <div class="auth-buttons">
+                <a href="{% url 'Users:login' %}" class="btn btn-primary">
+                    Войти в аккаунт
+                </a>
+                <a href="{% url 'Users:registration' %}" class="btn btn-outline-primary">
+                    Зарегистрироваться
+                </a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Для авторизованных пользователей -->
+
+    <!-- Статистика -->
+    <div class="feed-stats">
+        <p>Количество Ваших подписок: {{ following_count }}</p>
+    </div>
+
+    <!-- Лента постов -->
+    <div class="posts-feed">
+        {% if posts %}
+            {% for post in posts %}
+            <div class="post-card">
+                <div class="post-header">
+                    <div class="post-author">
+                        <a href="{% url 'Users:another_profile' post.author.id %}">
+                        {% if post.author.avatar %}
+                            <img src="{{ post.author.avatar.url|default:'/static/images/default_avatar.jpg' }}"
+                                alt="{{ post.author.username }}" class="author-avatar">
+                        {% endif %}
+                            <div class="author-info">
+                                <strong>{{ post.author.username }}</strong>
+                                <span class="post-date">{{ post.pub_time|date:"d.m.Y H:i" }}</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <p>{{ post.text }}</p>
+                    {% if post.photo %}
+                    <div class="post-image-container">
+                        <img src="{{ post.photo.url }}" alt="Post image" class="post-image">
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Блок лайков - ИСПРАВЛЕННАЯ версия -->
+                <div class="post-actions">
+                    {% if request.user.is_authenticated %}
+                        <form class="like-form" data-post-id="{{ post.id }}">
+                            {% csrf_token %}
+                            <button type="button" class="like-btn {% if post.is_liked %}liked{% endif %}" 
+                                    data-post-id="{{ post.id }}">
+                                {% if post.is_liked %}❤️{% else %}🤍{% endif %}
+                                <span class="like-count" data-post-id="{{ post.id }}">{{ post.likes_count }}</span>
+                            </button>
+                        </form>
+                    {% else %}
+                        <div class="like-btn">
+                            🤍 <span class="like-count">{{ post.likes_count }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-feed">
+                <div class="empty-icon">📋</div>
+                <h3>Лента пуста</h3>
+                <p>Подпишитесь на других пользователей, чтобы видеть их записи здесь</p>
+                <a href="{% url 'Users:search' %}" class="btn btn-primary">
+                    🔍 Найти пользователей
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{% if request.user.is_authenticated %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Обработчик для кнопок лайков
+    document.querySelectorAll('.like-btn').forEach(button => {
+        button.addEventListener('click', async function(e) {
+            e.preventDefault();
+            
+            const postId = this.dataset.postId;
+            const form = this.closest('.like-form');
+            const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            try {
+                const response = await fetch(`/posts/like/${postId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrfToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    // Обновляем сердечко
+                    const likeBtn = document.querySelector(`.like-btn[data-post-id="${postId}"]`);
+                    if (data.is_liked) {
+                        likeBtn.innerHTML = '❤️ <span class="like-count" data-post-id="' + postId + '">' + data.likes_count + '</span>';
+                        likeBtn.classList.add('liked');
+                    } else {
+                        likeBtn.innerHTML = '🤍 <span class="like-count" data-post-id="' + postId + '">' + data.likes_count + '</span>';
+                        likeBtn.classList.remove('liked');
+                    }
+                    
+                    // Добавляем анимацию
+                    likeBtn.style.transform = 'scale(1.2)';
+                    setTimeout(() => {
+                        likeBtn.style.transform = 'scale(1)';
+                    }, 200);
+                    
+                } else {
+                    console.error('Ошибка при обработке лайка');
+                    // Fallback: обычная отправка формы
+                    form.submit();
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                // Fallback: обычная отправка формы
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Поиск пользователей</title>{% endblock %}
+
+{% block content %}
+<div class="friends-container">
+    <h1 class="friends-title">Поиск пользователей</h1>
+    
+    <!-- Форма поиска -->
+    <div class="search-form-container">
+        <form method="get" action="{% url 'Users:search' %}" class="user-search-form">
+            <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Введите имя пользователя..." class="search-input">
+            <button type="submit" class="search-submit-btn">🔍 Найти</button>
+        </form>
+    </div>
+
+    <!-- Результаты поиска -->
+    {% if request.GET.q %}
+    <div class="search-results">
+        <h2 class="results-title">
+            {% if object_list %}
+                Найдено пользователей: {{ object_list.count }}
+            {% else %}
+                Пользователи не найдены
+            {% endif %}
+        </h2>
+        
+        {% if object_list %}
+        <div class="friends-list">
+            {% for user in object_list %}
+            <div class="friend-card">
+                <div class="friend-avatar">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.username }}">
+                    {% else %}
+                        <img src="{% static 'img/default_avatar.jpg' %}" alt="Аватар">
+                    {% endif %}
+                </div>
+                
+                <div class="friend-info">
+                    <h3 class="friend-name">
+                        {% if user.first_name and user.last_name %}
+                            {{ user.first_name }} {{ user.last_name }}
+                        {% else %}
+                            {{ user.username }}
+                        {% endif %}
+                    </h3>
+                    <p class="friend-username">@{{ user.username }}</p>
+                    <p class="user-joined">Зарегистрирован: {{ user.date_joined|date:"d.m.Y" }}</p>
+                </div>
+                
+                <div class="friend-actions">
+                    <a href="{% url 'Users:another_profile' user.id %}" class="profile-link">Профиль</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <div class="no-results-icon">🔍</div>
+            <h3>Ничего не найдено</h3>
+            <p>Попробуйте изменить поисковый запрос</p>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <div class="search-prompt">
+        <div class="prompt-icon">👥</div>
+        <h3>Найдите пользователей</h3>
+        <p>Введите имя пользователя в поле поиска выше</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

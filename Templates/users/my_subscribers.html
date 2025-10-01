@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Мои подписки - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="friends-container">
+    <h1 class="friends-title">Мои подписчики</h1>
+    <div class="friends-list">
+        {% for sub in subscribes %}
+        <div class="friend-card">
+            <div class="friend-avatar">
+                {% if sub.user.avatar %}
+                    <img src="{{ sub.follower_for.avatar.url }}" alt="{{ sub.follower_for.username }}">
+                {% else %}
+                    <img src="{% static 'img/default_avatar.jpg' %}" alt="Аватар">
+                {% endif %}
+            </div>
+            
+            <div class="friend-info">
+                <h3 class="friend-name">
+                    {{ sub.user.username }}
+                </h3>
+                <p class="friend-username">@{{ sub.user.username }}</p>
+            </div>
+            <div class="friend-actions">
+                <a href="{% url 'Users:another_profile' sub.user.id %}" class="profile-link">Профиль</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-friends">
+            <div class="no-friends-icon">👥</div>
+            <h2>У вас пока нет подписок</h2>
+            <p>Найдите интересных людей и подпишитесь на них</p>
+            <a href="{% url 'Users:search' %}" class="find-friends-btn">Найти пользователей</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Мои понравившиеся - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="my-posts-container">
+    <!-- Заголовок -->
+    <div class="posts-header">
+        <h1>Мои понравившиеся</h1>
+        <div class="header-actions">
+            <a href="{% url 'Posts:create_post' %}" class="btn btn-primary">
+                📝 Создать новую запись
+            </a>
+            <a href="{% url 'Posts:index' %}" class="btn btn-secondary">
+                ← Назад к ленте
+            </a>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="posts-navigation">
+        <a href="{% url 'Posts:create_post' %}" class="nav-btn">
+            📝 Создать запись
+        </a>
+        <a href="{% url 'Posts:my_posts' %}" class="nav-btn">
+            📋 Мои записи
+        </a>
+        <a href="{% url 'Posts:liked_posts' %}" class="nav-btn nav-btn-active">
+            ❤️ Мои понравившиеся
+        </a>
+    </div>
+
+    <!-- Список понравившихся записей -->
+    <div class="posts-list">
+        {% if posts %}
+            {% for post in posts %}
+            <div class="post-card">
+                <!-- Заголовок поста с автором -->
+                <div class="post-header">
+                    <div class="post-author">
+                        <a href="{% url 'Users:another_profile' post.author.id %}">
+                            {% if post.author.avatar %}
+                            <img src="{{ post.author.avatar.url|default:'/static/images/default_avatar.jpg' }}" 
+                                 alt="{{ post.author.username }}" class="author-avatar">
+                            {% endif %}
+                            <div class="author-info">
+                                <strong>{{ post.author.username }}</strong>
+                                <span class="post-date">{{ post.pub_time|date:"d.m.Y H:i" }}</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Содержимое поста -->
+                <div class="post-content">
+                    <p>{{ post.text }}</p>
+                    {% if post.photo %}
+                    <div class="post-image-container">
+                        <img src="{{ post.photo.url }}" alt="Изображение записи" class="post-image">
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Блок лайков -->
+                <div class="post-actions">
+                    <form method="post" action="{% url 'Posts:like' post.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="next" value="{% url 'Posts:liked_posts' %}">
+                        <button type="submit" class="like-btn liked">
+                            ❤️ {{ likes_count }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Пустой список -->
+            <div class="empty-posts">
+                <div class="empty-icon">❤️</div>
+                <h2>У вас пока нет понравившихся записей</h2>
+                <p>Ставьте лайки интересным записям, и они появятся здесь</p>
+                <a href="{% url 'Posts:index' %}" class="btn btn-primary">
+                    Перейти к ленте
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

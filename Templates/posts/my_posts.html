@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Мои записи - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="my-posts-container">
+    <!-- Заголовок -->
+    <div class="posts-header">
+        <h1>Мои записи</h1>
+        <div class="header-actions">
+            <a href="{% url 'Posts:create_post' %}" class="btn btn-primary">
+                📝 Создать новую запись
+            </a>
+            <a href="{% url 'Posts:index' %}" class="btn btn-secondary">
+                ← Назад к ленте
+            </a>
+        </div>
+    </div>
+
+    <!-- Навигация -->
+    <div class="posts-navigation">
+        <a href="{% url 'Posts:create_post' %}" class="nav-btn">
+            📝 Создать запись
+        </a>
+        <a href="{% url 'Posts:my_posts' %}" class="nav-btn nav-btn-active">
+            📋 Мои записи
+        </a>
+        <a href="{% url 'Posts:liked_posts' %}" class="nav-btn">
+            ❤️ Мои понравившиеся
+        </a>
+    </div>
+
+    <!-- Список записей -->
+    <div class="posts-list">
+        {% if posts %}
+            {% for post in posts %}
+            <div class="post-card">
+                <!-- Заголовок поста -->
+                <div class="post-header">
+                    <div class="post-info">
+                        <span class="post-date">{{ post.pub_time|date:"d.m.Y H:i" }}</span>
+                        {% if post.updated_at and post.updated_at != post.pub_time %}
+                        <span class="post-edited">(ред.)</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Содержимое поста -->
+                <div class="post-content">
+                    <p>{{ post.text }}</p>
+                    {% if post.photo %}
+                    <div class="post-image-container">
+                        <img src="{{ post.photo.url }}" alt="Изображение записи" class="post-image">
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Блок лайков и статистики -->
+                <div class="post-stats-actions">
+                    <!-- Статистика лайков -->
+                    <div class="post-stats">
+                        <span class="likes-count">❤️ {{ post.likes_count }}</span>
+                    </div>
+
+                    <!-- Кнопки действий -->
+                    <div class="post-actions">
+                        <a href="{% url 'Posts:edit_post' post.id %}" class="btn-edit">
+                            ✏️ Редактировать
+                        </a>
+                        <form method="post" action="{% url 'Posts:delete_post' post.id %}" class="delete-form">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-delete" onclick="return confirm('Удалить эту запись?')">
+                                🗑️ Удалить
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Пустой список -->
+            <div class="empty-posts">
+                <div class="empty-icon">📝</div>
+                <h2>У вас пока нет записей</h2>
+                <p>Создайте свою первую запись и поделитесь мыслями с сообществом</p>
+                <a href="{% url 'Posts:create_post' %}" class="btn btn-primary">
+                    Создать первую запись
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
