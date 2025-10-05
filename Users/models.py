@@ -3,39 +3,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
-
-
-class CityField(models.CharField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault('max_length', 100)
-        kwargs.setdefault('blank', True)
-        super().__init__(*args, **kwargs)
-
-    def validate(self, value, model_instance):
-        super().validate(value, model_instance)
-        if value and not self.is_valid_city(value):
-            raise ValidationError(f'Город "{value}" не найден в базе данных')
-
-    def is_valid_city(self, city_name):
-        """Проверяет, существует ли город в базе Oxilor"""
-        try:
-            url = "https://data.oxilor.com/rest/regions"
-            params = {
-                "name": city_name,
-                "language": "ru",
-                "types": "city"
-            }
-            headers = {
-                "Authorization": "Bearer objkpuDQEy6GCdX2iArwrXnRB19wPs"
-            }
-            response = requests.get(url, params=params, headers=headers, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                return any(city['name'].lower() == city_name.lower() for city in data.get('data', []))
-            return False
-        except:
-            return False  # При ошибке сети считаем город валидным
+from Users.api import CityParser
 
 
 class Profile(AbstractUser):
