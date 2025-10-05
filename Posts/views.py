@@ -112,3 +112,21 @@ def show_liked_posts(request):
     return render(request,
                   'posts/liked_posts.html',
                   {'posts': liked_posts,})
+
+
+def show_another_profile_posts(request, user_id):
+    author_id = user_id
+    try:
+        posts = Posts.objects.filter(author__id=user_id).order_by('-pub_time')
+        for post in posts:
+            post.likes_count = Likes.objects.filter(for_post=post).count()
+            if request.user.is_authenticated:
+                post.is_liked = Likes.objects.filter(maker=request.user, for_post=post).exists()
+            else:
+                post.is_liked = False
+        return render(request,
+                      'Posts/another_profile_posts.html',
+                      {'posts': posts,
+                       'author_id': author_id})
+    except:
+        return render(request, 'Posts/another_profile_posts.html')

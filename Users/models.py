@@ -39,10 +39,12 @@ class CityField(models.CharField):
 
 
 class Profile(AbstractUser):
-    '''Оформляет аккаунт пользователя'''
     GENDER_CHOICE = (("M", "М"),
                      ("F", "Ж"),
                      (None, "-"))
+    CITY_CHOICE = [('Москва', 'Москва'),
+                   ('Санкт-Петербург', 'Санкт-Петербург')]
+    COUNTRY_CHOICE = [(None, '-')]
     avatar = models.ImageField('Аватар',
                                blank=True,
                                upload_to='images/avatar/')
@@ -50,10 +52,16 @@ class Profile(AbstractUser):
                               max_length=1,
                               choices=GENDER_CHOICE,
                               blank=True)
-    # city = models.CharField('Город',
-    #                         max_length=100,
-    #                         blank=True)
-    city = CityField('Город')
+    country = models.CharField('Страна',
+                               max_length=100,
+                               blank=True,
+                               null=True,
+                               choices=[])
+    city = models.CharField('Город',
+                            max_length=100,
+                            blank=True,
+                            null=True,
+                            choices=CITY_CHOICE)
     birth_date = models.DateField('Дата рождения',
                                   null=True,
                                   blank=True)
@@ -72,31 +80,19 @@ class Profile(AbstractUser):
         verbose_name = 'Профиль'
         verbose_name_plural = 'Профили'
 
-    @staticmethod
-    def get_cities_suggestions(query):
-        """Получает список городов из API Oxilor"""
-        try:
-            url = "https://data.oxilor.com/rest/regions"
-            params = {
-                "name": query,
-                "language": "ru",
-                "types": "city",
-                "limit": 10
-            }
-            headers = {
-                "Authorization": "Bearer objkpuDQEy6GCdX2iArwrXnRB19wPs"
-            }
-            response = requests.get(url, params=params, headers=headers, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                cities = [city['name'] for city in data.get('data', [])]
-                return cities
-            else:
-                print(f"API Error: {response.status_code} - {response.text}")
-                return []
-        except Exception as e:
-            print(f"Ошибка при получении городов: {e}")
-            return []
+
+def update_country_choices():
+    try:
+        parser = CityParser()
+        countries = parser.get_countries()
+        if countries:
+            Profile.COUNTRY_CHOICE[:] = countries
+            Profile._meta.get_field('country').choices = countries
+            print(f"Успешно загружено {len(countries)} стран")
+    except Exception as e:
+        print(f"Ошибка: {e}")
+
+update_country_choices()
 
 
 class Status(models.Model):

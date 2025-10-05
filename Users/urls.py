@@ -1,7 +1,6 @@
 from django.urls import path
 from Users import views as v
 from .views import CustomLoginView, CustomLogoutView, search_users
-from .api import get_cities
 
 app_name = 'Users'
 
@@ -22,5 +21,5 @@ urlpatterns = [
     path('my_subscribers/', v.show_my_subscribers, name='my_subscribers'),
     path('my_dialogs/', v.show_my_dialogs, name='show_my_dialogs'),
     path('my_apps/', v.show_my_apps, name='my_apps'),
-    path('api/cities/', get_cities, name='get_cities'),
+    path('change_info/', v.change_info, name='change_info')
     ]

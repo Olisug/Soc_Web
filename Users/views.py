@@ -5,7 +5,7 @@ from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from .forms import UserRegisterForm
+from .forms import UserRegisterForm, UserEditForm
 from .models import Friend, Follower
 
 User = get_user_model()
@@ -23,6 +23,23 @@ def registration(request):
         form = UserRegisterForm()
     return render(request,
                   'users/registration.html',
+                  {'form': form})
+
+
+@login_required
+def change_info(request):
+    '''Редактирование профиля'''
+    if request.method == 'POST':
+        form = UserEditForm(request.POST,
+                            request.FILES,
+                            instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('/')  # или другой URL вашего профиля
+    else:
+        form = UserEditForm(instance=request.user)
+    return render(request,
+                  'users/change_info.html',
                   {'form': form})
 
 
