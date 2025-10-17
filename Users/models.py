@@ -2,18 +2,24 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth import get_user_model
+<<<<<<< HEAD
 from django.core.exceptions import ValidationError
 from api_controller import CityParser
 
 
 parser = CityParser()
+=======
+from Users.api import CityParser
+>>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
 
 
 class Profile(AbstractUser):
-    '''Оформляет аккаунт пользователя'''
     GENDER_CHOICE = (("M", "М"),
                      ("F", "Ж"),
                      (None, "-"))
+    CITY_CHOICE = [('Москва', 'Москва'),
+                   ('Санкт-Петербург', 'Санкт-Петербург')]
+    COUNTRY_CHOICE = [(None, '-')]
     avatar = models.ImageField('Аватар',
                                blank=True,
                                upload_to='images/avatar/')
@@ -21,11 +27,24 @@ class Profile(AbstractUser):
                               max_length=1,
                               choices=GENDER_CHOICE,
                               blank=True)
+<<<<<<< HEAD
     city = models.CharField('Город',
                             choices=parser.run(),
                             max_length=100,
                             blank=True,
                             null=True)
+=======
+    country = models.CharField('Страна',
+                               max_length=100,
+                               blank=True,
+                               null=True,
+                               choices=[])
+    city = models.CharField('Город',
+                            max_length=100,
+                            blank=True,
+                            null=True,
+                            choices=CITY_CHOICE)
+>>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
     birth_date = models.DateField('Дата рождения',
                                   null=True,
                                   blank=True)
@@ -44,6 +63,23 @@ class Profile(AbstractUser):
         verbose_name = 'Профиль'
         verbose_name_plural = 'Профили'
 
+<<<<<<< HEAD
+=======
+
+def update_country_choices():
+    try:
+        parser = CityParser()
+        countries = parser.get_countries()
+        if countries:
+            Profile.COUNTRY_CHOICE[:] = countries
+            Profile._meta.get_field('country').choices = countries
+            print(f"Успешно загружено {len(countries)} стран")
+    except Exception as e:
+        print(f"Ошибка: {e}")
+
+update_country_choices()
+
+>>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
 
 class Status(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)

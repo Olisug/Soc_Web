@@ -4,11 +4,12 @@ from .models import Profile, Follower, Friend
 
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ('username', 'short_name', 'city', 'birth_date', 'email')
+    list_display = ('username', 'short_name', 'country', 'city', 'birth_date', 'email')
     fields = ('username',
               'avatar',
               'short_name',
               'gender',
+              'country',
               'city',
               'birth_date',
               'email',)

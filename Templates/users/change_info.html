@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}<title>Регистрация - Social Network</title>{% endblock %}
+{% block title %}<title>Восстановление информации - Social Network</title>{% endblock %}
 
 {% block content %}
 <div class="auth-container">
     <div class="auth-card">
         <div class="auth-header">
-            <h2>Регистрация</h2>
+            <h2>Восстановление информации</h2>
             <p>Присоединяйтесь к нашему сообществу</p>
         </div>
         
@@ -36,13 +36,10 @@
             </div>
             
             <button type="submit" class="auth-submit-btn">
-                Создать аккаунт
+                Сохранить информацию
             </button>
         </form>
         
-        <div class="auth-footer">
-            <p>Уже есть аккаунт? <a href="{% url 'Users:login' %}" class="auth-link">Войти</a></p>
-        </div>
     </div>
 </div>
 {% endblock %}

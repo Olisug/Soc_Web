@@ -1,5 +1,5 @@
 import requests
-from typing import List, Dict
+from typing import List, Tuple
 
 my_user_agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 YaBrowser/25.8.0.0 Safari/537.36'
 api_key = 'objkpuDQEy6GCdX2iArwrXnRB19wPs'
@@ -15,26 +15,21 @@ class CityParser:
                         'X-API-Key': api_key}
         self.session.headers.update(self.headers)
 
-    def get_countries(self) -> List[Dict]:
+    def get_countries(self) -> List[Tuple[str, str]]:
+        country_choices = []
         try:
             response = self.session.get(countries_url)
             response.raise_for_status()
-            return response.json()
+            countries = response.json()
+            for country in countries:
+                name = country.get('name')
+                country_choices.append((name, name))
+            print(country_choices)
+            return country_choices
         except requests.exceptions.RequestException as error:
             print(f"Ошибка при получении списка стран: {error}")
             return []
 
-<<<<<<< HEAD
-    def countries_tuple(self):
-        countries = self.get_countries()
-        countries_list = []
-        for country in countries:
-            countries_list.append((country['name'], country['name']))
-        return countries_list
-
-    def run(self):
-        self.countries_tuple()
-=======
     def run(self):
         countries = self.get_countries()
         return countries
@@ -43,4 +38,3 @@ class CityParser:
 if __name__ == "__main__":
     parser = CityParser()
     parser.run()
->>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
