@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Users',
     'Dialogs',
-    'Posts'
+    'Posts',
+    'Weather'
 ]
 
 MIDDLEWARE = [

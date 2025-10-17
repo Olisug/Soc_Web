@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>Мои приложения - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="friends-container">
+    <h1 class="friends-title">Мои приложения</h1>
+    
+    <div class="friends-list">
+        {% for app in apps %}
+        <div class="friend-card app-card">
+            <div class="friend-avatar app-emblem">
+                <div class="emblem-container">
+                    {{ app.emblem }}
+                </div>
+            </div>
+            
+            <div class="friend-info app-info">
+                <h3 class="friend-name app-name">
+                    {{ app.app_name }}
+                </h3>
+                <p class="friend-username app-description">{{ app.description }}</p>
+            </div>
+            
+            <div class="friend-actions app-actions">
+                <a href="{{ app.url }}" class="profile-link app-link">Открыть</a>
+            </div>
+        </div>
+        {% empty %}
+        <div class="no-friends">
+            <div class="no-friends-icon">📱</div>
+            <h2>Приложения пока не добавлены</h2>
+            <p>Скоро здесь появятся интересные приложения</p>
+            <a href="{% url 'home' %}" class="find-friends-btn">На главную</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.app-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e1e8ed;
+}
+
+.app-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-color: #007bff;
+}
+
+.app-emblem {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    height: 60px;
+    margin-right: 15px;
+    border: 1px solid #dee2e6;
+}
+
+.emblem-container {
+    font-size: 24px;
+    color: #495057;
+    text-align: center;
+    line-height: 1;
+}
+
+.app-info {
+    flex: 1;
+}
+
+.app-name {
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+}
+
+.app-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.app-link {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.app-link:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.no-friends-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.find-friends-btn {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin-top: 1rem;
+}
+
+.find-friends-btn:hover {
+    background: linear-gradient(135deg, #20c997, #1e7e34);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .app-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .app-emblem {
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    
+    .app-info {
+        margin-bottom: 15px;
+    }
+    
+    .app-name {
+        font-size: 1.1rem;
+    }
+    
+    .app-description {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .friends-container {
+        padding: 15px;
+    }
+    
+    .friends-title {
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .app-card {
+        padding: 15px;
+    }
+    
+    .emblem-container {
+        font-size: 20px;
+    }
+    
+    .app-emblem {
+        width: 50px;
+        height: 50px;
+        min-width: 50px;
+    }
+}
+</style>
+{% endblock %}

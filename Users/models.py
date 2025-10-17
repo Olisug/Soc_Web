@@ -1,41 +1,12 @@
-import requests
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from api_controller import CityParser
 
 
-class CityField(models.CharField):
-    def __init__(self, *args, **kwargs):
-        kwargs.setdefault('max_length', 100)
-        kwargs.setdefault('blank', True)
-        super().__init__(*args, **kwargs)
-
-    def validate(self, value, model_instance):
-        super().validate(value, model_instance)
-        if value and not self.is_valid_city(value):
-            raise ValidationError(f'Город "{value}" не найден в базе данных')
-
-    def is_valid_city(self, city_name):
-        """Проверяет, существует ли город в базе Oxilor"""
-        try:
-            url = "https://data.oxilor.com/rest/regions"
-            params = {
-                "name": city_name,
-                "language": "ru",
-                "types": "city"
-            }
-            headers = {
-                "Authorization": "Bearer objkpuDQEy6GCdX2iArwrXnRB19wPs"
-            }
-            response = requests.get(url, params=params, headers=headers, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                return any(city['name'].lower() == city_name.lower() for city in data.get('data', []))
-            return False
-        except:
-            return False  # При ошибке сети считаем город валидным
+parser = CityParser()
 
 
 class Profile(AbstractUser):
@@ -50,10 +21,11 @@ class Profile(AbstractUser):
                               max_length=1,
                               choices=GENDER_CHOICE,
                               blank=True)
-    # city = models.CharField('Город',
-    #                         max_length=100,
-    #                         blank=True)
-    city = CityField('Город')
+    city = models.CharField('Город',
+                            choices=parser.run(),
+                            max_length=100,
+                            blank=True,
+                            null=True)
     birth_date = models.DateField('Дата рождения',
                                   null=True,
                                   blank=True)
@@ -71,32 +43,6 @@ class Profile(AbstractUser):
     class Meta:
         verbose_name = 'Профиль'
         verbose_name_plural = 'Профили'
-
-    @staticmethod
-    def get_cities_suggestions(query):
-        """Получает список городов из API Oxilor"""
-        try:
-            url = "https://data.oxilor.com/rest/regions"
-            params = {
-                "name": query,
-                "language": "ru",
-                "types": "city",
-                "limit": 10
-            }
-            headers = {
-                "Authorization": "Bearer objkpuDQEy6GCdX2iArwrXnRB19wPs"
-            }
-            response = requests.get(url, params=params, headers=headers, timeout=5)
-            if response.status_code == 200:
-                data = response.json()
-                cities = [city['name'] for city in data.get('data', [])]
-                return cities
-            else:
-                print(f"API Error: {response.status_code} - {response.text}")
-                return []
-        except Exception as e:
-            print(f"Ошибка при получении городов: {e}")
-            return []
 
 
 class Status(models.Model):

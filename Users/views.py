@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from .forms import UserRegisterForm
 from .models import Friend, Follower
+from Weather.models import Apps
 
 User = get_user_model()
 
@@ -222,6 +223,8 @@ def show_my_dialogs(request):
     return (request, 'users/my_dialogs.html')
 
 
-@login_required
 def show_my_apps(request):
-    return (request, 'users/my_apps.html')
+    all_apps = Apps.objects.all()
+    return render(request,
+                  'users/my_apps.html',
+                  {'apps': all_apps})
