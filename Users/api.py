@@ -35,6 +35,6 @@ class CityParser:
         return countries
 
 
-if __name__ == "__main__":
-    parser = CityParser()
-    parser.run()
+# if __name__ == "__main__":
+#     parser = CityParser()
+#     parser.run()

@@ -14,6 +14,9 @@ class Apps(models.Model):
     url = models.CharField('Url-адрес приложения',
                            max_length=1000,
                            blank=False)
+    base_url = models.CharField('Url-адрес микросервиса',
+                                max_length=1000,
+                                blank=True)
 
     def __str__(self):
         return str(self.app_name)

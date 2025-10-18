@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Погода - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="weather-container">
+    <div class="weather-header">
+        <h1 class="weather-title">🌤️ Прогноз погоды</h1>
+        <p class="weather-subtitle">Узнайте текущую погоду в любом городе</p>
+    </div>
+    
+    <form method="post" class="weather-form">
+        {% csrf_token %}
+        <div class="form-group">
+            <input type="text" name="city" placeholder="Введите город..." required class="city-input">
+            <button type="submit" class="submit-btn">Узнать погоду</button>
+        </div>
+    </form>
+
+    {% if weather_data %}
+    <div class="weather-card">
+        <div class="weather-location">
+            <h2 class="city-name">{{ weather_data.city }}</h2>
+            <div class="location-icon">📍</div>
+        </div>
+        
+        <div class="weather-main">
+            <div class="temperature">
+                <span class="temp-value">{{ weather_data.temperature }}</span>
+                <span class="temp-unit">°C</span>
+            </div>
+            <div class="description">{{ weather_data.description }}</div>
+        </div>
+        
+        <!-- <div class="weather-details">
+            <div class="detail-item">
+                <span class="detail-icon">💧</span>
+                <span class="detail-label">Влажность</span>
+                <span class="detail-value">{{ weather_data.humidity }}%</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-icon">🎐</span>
+                <span class="detail-label">Ветер</span>
+                <span class="detail-value">{{ weather_data.wind.max }} м/с</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-icon">📊</span>
+                <span class="detail-label">Давление</span>
+                <span class="detail-value">{{ weather_data.pressure }} hPa</span>
+            </div> -->
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.weather-container {
+    max-width: 420px;
+    margin: 40px auto;
+    padding: 30px;
+}
+
+.weather-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.weather-title {
+    color: #2c3e50;
+    font-size: 28px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.weather-subtitle {
+    color: #6c757d;
+    font-size: 16px;
+    margin: 0;
+}
+
+.weather-form {
+    margin-bottom: 30px;
+}
+
+.form-group {
+    display: flex;
+    gap: 12px;
+    margin: 0;
+}
+
+.city-input {
+    flex: 1;
+    padding: 14px 18px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.city-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.submit-btn {
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.weather-card {
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid #e1e8ed;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.weather-location {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.city-name {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.location-icon {
+    font-size: 20px;
+}
+
+.weather-main {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid #f1f3f4;
+}
+
+.temperature {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.temp-value {
+    font-size: 56px;
+    font-weight: 300;
+    color: #2c3e50;
+    line-height: 1;
+}
+
+.temp-unit {
+    font-size: 24px;
+    color: #6c757d;
+    margin-top: 8px;
+}
+
+.description {
+    font-size: 18px;
+    color: #495057;
+    font-weight: 500;
+}
+
+.weather-details {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 0;
+}
+
+.detail-icon {
+    font-size: 20px;
+    width: 24px;
+    text-align: center;
+}
+
+.detail-label {
+    flex: 1;
+    color: #6c757d;
+    font-size: 15px;
+}
+
+.detail-value {
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .weather-container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .form-group {
+        flex-direction: column;
+    }
+    
+    .weather-card {
+        padding: 25px 20px;
+    }
+    
+    .temp-value {
+        font-size: 48px;
+    }
+    
+    .weather-location {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+</style>
+{% endblock %}

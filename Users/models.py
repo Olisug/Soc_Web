@@ -2,15 +2,13 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from datetime import datetime, timedelta, timezone
 from django.contrib.auth import get_user_model
-<<<<<<< HEAD
 from django.core.exceptions import ValidationError
-from api_controller import CityParser
+# from api_controller import CityParser
 
 
-parser = CityParser()
-=======
+# parser = CityParser()
 from Users.api import CityParser
->>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
+
 
 
 class Profile(AbstractUser):
@@ -27,24 +25,16 @@ class Profile(AbstractUser):
                               max_length=1,
                               choices=GENDER_CHOICE,
                               blank=True)
-<<<<<<< HEAD
-    city = models.CharField('Город',
-                            choices=parser.run(),
-                            max_length=100,
-                            blank=True,
-                            null=True)
-=======
     country = models.CharField('Страна',
                                max_length=100,
                                blank=True,
                                null=True,
-                               choices=[])
+                               choices=COUNTRY_CHOICE)
     city = models.CharField('Город',
                             max_length=100,
                             blank=True,
                             null=True,
                             choices=CITY_CHOICE)
->>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
     birth_date = models.DateField('Дата рождения',
                                   null=True,
                                   blank=True)
@@ -63,8 +53,6 @@ class Profile(AbstractUser):
         verbose_name = 'Профиль'
         verbose_name_plural = 'Профили'
 
-<<<<<<< HEAD
-=======
 
 def update_country_choices():
     try:
@@ -79,7 +67,6 @@ def update_country_choices():
 
 update_country_choices()
 
->>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
 
 class Status(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE)

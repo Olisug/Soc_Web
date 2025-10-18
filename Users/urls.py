@@ -1,10 +1,6 @@
 from django.urls import path
 from Users import views as v
-<<<<<<< HEAD
 from .views import CustomLoginView, CustomLogoutView
-=======
-from .views import CustomLoginView, CustomLogoutView, search_users
->>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
 
 app_name = 'Users'
 
@@ -27,9 +23,5 @@ urlpatterns = [
     path('my_subscribes/', v.show_my_subscribes, name='my_subscribes'),
     path('my_subscribers/', v.show_my_subscribers, name='my_subscribers'),
     path('my_dialogs/', v.show_my_dialogs, name='show_my_dialogs'),
-    path('my_apps/', v.show_my_apps, name='my_apps'),
-<<<<<<< HEAD
-=======
     path('change_info/', v.change_info, name='change_info')
->>>>>>> 4b7ae953ce9f8de4f1169dfdfc9ae27d161ad66e
     ]
