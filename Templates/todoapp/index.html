@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class='container_form'>
+    <h3>Приветствуем Вас!</h3>
+    <div class='container_form_login'>
+        Выберите действие:
+        {% if request.user.is_authenticated %}
+            <li><a href="{% url 'ToDoApp:create'%}">Создать задачу</a></li>
+            <li><a href="{% url 'todoapp:tasks'%}">Мои задачи</a></li>
+            <li><a href="{% url 'logout'%}">Выход</a></li>
+        {% else %}
+            <li><a href="{% url 'login'%}">Войти в свой аккаунт</a></li>
+            <li><a href="{% url 'register'%}">Зарегистрироваться</a></li>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

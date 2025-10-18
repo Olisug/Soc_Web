@@ -25,3 +25,13 @@ def weather_app_view(request):
                'weather_data': weather_data, 
                'error': error}
     return render(request, 'apps/weather_app.html', context)
+
+
+def movieblog(request):
+    return render(request,
+                  'apps/coming_soon.html')
+
+
+def shop(request):
+    return render(request,
+                  'apps/coming_soon.html')

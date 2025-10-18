@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'Users',
     'Dialogs',
     'Posts',
-    'Weather'
+    'Weather',
+    'ToDoList',
 ]
 
 MIDDLEWARE = [

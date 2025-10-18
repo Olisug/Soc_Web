@@ -26,7 +26,8 @@ urlpatterns = [
     path('auth/', include('Users.urls')),
     path('dialogs/', include('Dialogs.urls')),
     path('posts/', include('Posts.urls')),
-    path('apps/', include('Weather.urls'))
+    path('apps/', include('Weather.urls')),
+    path('todo/', include('ToDoList.urls'))
 ]
 
 if settings.DEBUG:

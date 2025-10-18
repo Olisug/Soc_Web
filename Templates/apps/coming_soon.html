@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Приложение в разработке - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="development-container">
+    <div class="development-content">
+        <div class="development-icon">🚧</div>
+        <h1 class="development-title">Приложение в разработке</h1>
+        <p class="development-message">Скоро здесь появится что-то интересное!</p>
+        <a href="{% url 'Weather:my_apps' %}" class="development-back-btn">← Назад к приложениям</a>
+    </div>
+</div>
+
+<style>
+.development-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70vh;
+    padding: 40px 20px;
+}
+
+.development-content {
+    text-align: center;
+    max-width: 400px;
+}
+
+.development-icon {
+    font-size: 80px;
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+.development-title {
+    color: #2c3e50;
+    font-size: 32px;
+    margin-bottom: 16px;
+    font-weight: 600;
+}
+
+.development-message {
+    color: #6c757d;
+    font-size: 18px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.development-back-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.development-back-btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* Анимация */
+.development-content {
+    animation: fadeInUp 0.6s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+    .development-icon {
+        font-size: 60px;
+    }
+    
+    .development-title {
+        font-size: 28px;
+    }
+    
+    .development-message {
+        font-size: 16px;
+    }
+}
+</style>
+{% endblock %}

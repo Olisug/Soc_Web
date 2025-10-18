@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}<title>Новая задача - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="task-create-container">
+    <div class="task-create-header">
+        <h1 class="task-create-title">✏️ Новая задача</h1>
+        <p class="task-create-subtitle">Добавьте новую задачу в ваш список</p>
+    </div>
+
+    <div class="task-create-card">
+        <form method="post" class="task-create-form">
+            {% csrf_token %}
+            
+            <div class="form-fields">
+                {% for field in form %}
+                <div class="form-field-group">
+                    <label for="{{ field.id_for_label }}" class="form-field-label">
+                        {{ field.label }}
+                    </label>
+                    <div class="form-field-input">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                    <div class="form-field-help">
+                        {{ field.help_text }}
+                    </div>
+                    {% endif %}
+                    {% if field.errors %}
+                    <div class="form-field-errors">
+                        {{ field.errors }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="form-submit-btn">
+                    <span class="btn-icon">+</span>
+                    Добавить задачу
+                </button>
+                <a href="{% url 'ToDoList:tasks' %}" class="form-cancel-btn">
+                    Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.task-create-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+}
+
+.task-create-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.task-create-title {
+    color: #2c3e50;
+    font-size: 32px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.task-create-subtitle {
+    color: #6c757d;
+    font-size: 16px;
+    margin: 0;
+}
+
+.task-create-card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    border: 1px solid #e1e8ed;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.task-create-form {
+    width: 100%;
+}
+
+.form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 40px;
+}
+
+.form-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-field-label {
+    color: #2c3e50;
+    font-weight: 500;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.form-field-input input,
+.form-field-input textarea,
+.form-field-input select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: inherit;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.form-field-input input:focus,
+.form-field-input textarea:focus,
+.form-field-input select:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.form-field-input textarea {
+    resize: vertical;
+    min-height: 100px;
+    line-height: 1.5;
+}
+
+.form-field-help {
+    font-size: 13px;
+    color: #6c757d;
+    margin-top: 4px;
+}
+
+.form-field-errors {
+    font-size: 13px;
+    color: #dc3545;
+    margin-top: 4px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-submit-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.form-submit-btn:hover {
+    background: linear-gradient(135deg, #20c997, #1e7e34);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.btn-icon {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.form-cancel-btn {
+    display: inline-block;
+    padding: 14px 32px;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.form-cancel-btn:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    color: white;
+}
+
+/* Стили для чекбоксов и селектов */
+.form-field-input input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+}
+
+.form-field-input select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 16px center;
+    background-repeat: no-repeat;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .task-create-container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .task-create-card {
+        padding: 30px 25px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .form-submit-btn,
+    .form-cancel-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .task-create-title {
+        font-size: 28px;
+    }
+    
+    .task-create-card {
+        padding: 25px 20px;
+    }
+    
+    .form-fields {
+        gap: 20px;
+    }
+    
+    .form-field-input input,
+    .form-field-input textarea,
+    .form-field-input select {
+        padding: 12px 14px;
+    }
+}
+
+/* Анимация появления */
+.task-create-card {
+    animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+{% endblock %}

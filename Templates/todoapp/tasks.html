@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>To-Do List - Social Network</title>{% endblock %}
+
+{% block content %}
+<div class="tasks-container">
+    <div class="tasks-header">
+        <h1 class="tasks-title">✅ Мой список задач</h1>
+        <p class="tasks-subtitle">Организуйте свои дела и цели</p>
+    </div>
+
+    <div class="tasks-actions">
+        <a href="{% url 'ToDoList:create' %}" class="task-create-btn">+ Новая задача</a>
+    </div>
+
+    <div class="tasks-list">
+        {% for i in items %}
+        <div class="task-card {% if i.completed %}task-completed{% endif %}">
+            <div class="task-main">
+                <div class="task-status">
+                    {% if i.completed %}
+                    <div class="status-completed">✓</div>
+                    {% else %}
+                    <div class="status-pending">●</div>
+                    {% endif %}
+                </div>
+                
+                <div class="task-content">
+                    <h3 class="task-name">{{ i.name }}</h3>
+                    <div class="task-meta">
+                        <span class="task-date">📅 {{ i.add_time|date:"d.m.Y" }} в {{ i.add_time|date:"H:i"}}</span>
+                    </div>
+                </div>
+            </div>
+
+            {% if i.author == user %}
+            <div class="task-actions">
+                {% if not i.completed %}
+                <a href="{% url 'ToDoList:complete' i.id %}" class="task-btn task-complete-btn">Завершить</a>
+                {% endif %}
+                <a href="{% url 'ToDoList:edit' i.id %}" class="task-btn task-edit-btn">✏️</a>
+                <a href="{% url 'ToDoList:delete' i.id %}" class="task-btn task-delete-btn">🗑️</a>
+            </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="tasks-empty">
+            <div class="empty-icon">📝</div>
+            <h3>Пока нет задач</h3>
+            <p>Создайте свою первую задачу</p>
+            <a href="{% url 'ToDoList:create' %}" class="empty-create-btn">Создать задачу</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.tasks-container {
+    max-width: 650px;
+    margin: 40px auto;
+    padding: 30px;
+}
+
+.tasks-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.tasks-title {
+    color: #2c3e50;
+    font-size: 32px;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.tasks-subtitle {
+    color: #6c757d;
+    font-size: 16px;
+    margin: 0;
+}
+
+.tasks-actions {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.task-create-btn {
+    display: inline-block;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.task-create-btn:hover {
+    background: linear-gradient(135deg, #20c997, #1e7e34);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.task-card {
+    background: white;
+    padding: 24px;
+    border-radius: 16px;
+    border: 1px solid #e1e8ed;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.task-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.task-completed {
+    opacity: 0.7;
+    background: #f8f9fa;
+}
+
+.task-completed .task-name {
+    text-decoration: line-through;
+    color: #6c757d;
+}
+
+.task-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    flex: 1;
+}
+
+.task-status {
+    margin-top: 2px;
+}
+
+.status-completed {
+    width: 24px;
+    height: 24px;
+    background: #28a745;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.status-pending {
+    width: 24px;
+    height: 24px;
+    background: #ffc107;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+}
+
+.task-content {
+    flex: 1;
+}
+
+.task-name {
+    color: #2c3e50;
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.task-meta {
+    display: flex;
+    gap: 16px;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+.task-date, .task-author {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.task-btn {
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.task-complete-btn {
+    background: #28a745;
+    color: white;
+}
+
+.task-complete-btn:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.task-edit-btn {
+    background: #17a2b8;
+    color: white;
+    padding: 8px;
+}
+
+.task-edit-btn:hover {
+    background: #138496;
+    transform: translateY(-1px);
+}
+
+.task-delete-btn {
+    background: #dc3545;
+    color: white;
+    padding: 8px;
+}
+
+.task-delete-btn:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+.tasks-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #e1e8ed;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.tasks-empty h3 {
+    color: #2c3e50;
+    margin-bottom: 8px;
+    font-size: 20px;
+}
+
+.tasks-empty p {
+    color: #6c757d;
+    margin-bottom: 25px;
+}
+
+.empty-create-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.empty-create-btn:hover {
+    background: #0056b3;
+    transform: translateY(-1px);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .tasks-container {
+        padding: 20px;
+        margin: 20px auto;
+    }
+    
+    .task-card {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .task-actions {
+        align-self: flex-end;
+    }
+    
+    .task-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .tasks-title {
+        font-size: 28px;
+    }
+    
+    .task-card {
+        padding: 20px;
+    }
+    
+    .task-actions {
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+}
+</style>
+{% endblock %}
